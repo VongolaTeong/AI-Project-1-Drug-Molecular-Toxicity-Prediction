@@ -19,3 +19,7 @@ learn from the data provided and predict the toxicity of other molecules.
 ## Usage
 This project provides an useful example of application of Deep Neural Network.
 Any student can use it as a reference but no plagiarism is allowed.
+
+<!-- LICENSE -->
+## License
+Distributed under the MIT License. See `LICENSE` for more information.
