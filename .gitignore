@@ -1,0 +1,9 @@
+
+test/names_onehots.npy
+test/names_smiles.txt
+train/names_labels.txt
+train/names_onehots.npy
+train/names_smiles.txt
+validation/names_labels.txt
+validation/names_onehots.npy
+validation/names_smiles.txt
