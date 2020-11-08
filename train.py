@@ -4,6 +4,34 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers, models
 
+def createModel():
+    #create model
+    model = models.Sequential()
+
+    #add layers to the model
+    model.add(layers.Conv2D(16, (3, 3), activation='relu', input_shape = inputShape, padding = 'same'))
+    model.add(layers.MaxPooling2D((2, 2), padding = 'same'))
+
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding = 'same'))
+    model.add(layers.MaxPooling2D((2, 2), padding = 'same'))
+
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', padding = 'same'))
+
+    #flatten 3D output to 1D for dense layers
+    model.add(layers.Flatten())
+    #add dense layers to perform classification
+    model.add(layers.Dense(64, activation='relu'))
+    model.add(layers.Dense(10))
+
+    #compile the model
+    model.compile(optimizer='adam',
+              loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+              metrics=['accuracy'])
+
+    return model
+
+
+
 #read names from file
 names = np.genfromtxt("train/names_labels.txt", dtype=str, delimiter = ',', skip_header = 1, usecols = (0))
 #read labels from file
@@ -33,30 +61,8 @@ inputShape = (1, 73, 398)
 onehots = np.reshape(onehots, [8169, 1, 73, 398])
 validOnehots = np.reshape(validOnehots , [272, 1, 73, 398])
 
-#create model
-model = models.Sequential()
-
-#add layers to the model
-model.add(layers.Conv2D(16, (3, 3), activation='relu', input_shape = inputShape, padding = 'same'))
-model.add(layers.MaxPooling2D((2, 2), padding = 'same'))
-
-model.add(layers.Conv2D(32, (3, 3), activation='relu', padding = 'same'))
-model.add(layers.MaxPooling2D((2, 2), padding = 'same'))
-
-model.add(layers.Conv2D(64, (3, 3), activation='relu', padding = 'same'))
-
-#flatten 3D output to 1D for dense layers
-model.add(layers.Flatten())
-#add dense layers to perform classification
-model.add(layers.Dense(64, activation='relu'))
-model.add(layers.Dense(10))
-
+model = createModel()
 model.summary()
-
-#compile the model
-model.compile(optimizer='adam',
-              loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-              metrics=['accuracy'])
 
 #iteration of training
 history = model.fit(onehots, labels, epochs=10, 
