@@ -73,8 +73,5 @@ def run():
     model.fit(onehots, labels, epochs = 10, validation_data=(validOnehots, validLabels),
           callbacks=[cp_callback])  #pass callback to training
 
-    #save the weights
-    model.save('weights/savedWeights')
-
 if __name__ == "__main__":
     run()
