@@ -25,6 +25,14 @@ size = onehots[0].shape
 #set input shape according to the size
 inputShape = (1, 73, 398)
 
+#check size for reshape purpose
+#print(onehots.shape)
+#print(validOnehots.shape)
+
+#reshape onehots for input purpose
+onehots = np.reshape(onehots, [8169, 1, 73, 398])
+validOnehots = np.reshape(validOnehots , [272, 1, 73, 398])
+
 #create model
 model = models.Sequential()
 
