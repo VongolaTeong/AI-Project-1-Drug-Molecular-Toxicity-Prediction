@@ -3,6 +3,7 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers, models
+import os
 
 def createModel():
     #create model
@@ -29,8 +30,6 @@ def createModel():
               metrics=['accuracy'])
 
     return model
-
-
 
 #read names from file
 names = np.genfromtxt("train/names_labels.txt", dtype=str, delimiter = ',', skip_header = 1, usecols = (0))
@@ -64,9 +63,17 @@ validOnehots = np.reshape(validOnehots , [272, 1, 73, 398])
 model = createModel()
 model.summary()
 
-#iteration of training
-history = model.fit(onehots, labels, epochs=10, 
-                    validation_data=(validOnehots, validLabels))
+checkpoint_path = "weights/cp.ckpt"
+checkpoint_dir = os.path.dirname(checkpoint_path)
+
+#create a callback that saves the model's weights
+cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath = checkpoint_path,
+                                                 save_weights_only = True,
+                                                 verbose = 1)
+
+#train the model with the new callback
+model.fit(onehots, labels, epochs = 10, validation_data=(validOnehots, validLabels),
+          callbacks=[cp_callback])  #pass callback to training
 
 #save the weights
 model.save('weights/savedWeights')

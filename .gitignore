@@ -8,3 +8,7 @@ validation/names_labels.txt
 validation/names_onehots.npy
 validation/names_smiles.txt
 weights/savedWeights
+weights/cp.ckpt.index
+weights/checkpoint
+weights/cp.ckpt.data-00001-of-00002
+weights/cp.ckpt.data-00000-of-00002
