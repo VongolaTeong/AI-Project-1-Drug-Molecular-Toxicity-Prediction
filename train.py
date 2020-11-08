@@ -13,6 +13,13 @@ labels = np.genfromtxt('train/names_labels.txt', delimiter = ',', skip_header = 
 data = np.load('train/names_onehots.npy', allow_pickle = True).item()
 onehots = data['onehots']
 
+#read validation labels from file
+validLabels = np.genfromtxt('validation/names_labels.txt', delimiter = ',', skip_header = 1, usecols = (1))
+
+#read validation onehots from file
+validData = np.load('validation/names_onehots.npy', allow_pickle = True).item()
+validOnehots = validData['onehots']
+
 #get size of 2D matrix of onehots
 size = onehots[0].shape
 #set input shape according to the size
@@ -35,3 +42,4 @@ model.add(layers.Dense(64, activation='relu'))
 model.add(layers.Dense(10))
 
 model.summary()
+
