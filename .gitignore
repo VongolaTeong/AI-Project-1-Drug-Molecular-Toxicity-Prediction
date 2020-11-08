@@ -7,3 +7,4 @@ train/names_smiles.txt
 validation/names_labels.txt
 validation/names_onehots.npy
 validation/names_smiles.txt
+weights/savedWeights
