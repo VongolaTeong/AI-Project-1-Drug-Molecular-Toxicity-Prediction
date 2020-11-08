@@ -19,6 +19,7 @@ model = createModel()
 checkpoint_path = "weights/cp.ckpt"
 model.load_weights(checkpoint_path)
 
+#predict label for test data
 predictions = model.predict(onehots)
 
 f = open('output_518030990014.txt', 'w')
@@ -26,6 +27,7 @@ f = open('output_518030990014.txt', 'w')
 #write header
 f.write('Chemical,Label\n')
 
+#write predicted labels into output file
 for i in range(len(predictions)):
     f.write(names[i]+',')
     f.write(str(np.argmax(predictions[i]))+"\n")
