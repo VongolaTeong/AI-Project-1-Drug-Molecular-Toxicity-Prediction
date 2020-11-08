@@ -6,6 +6,9 @@ from tensorflow.keras import layers, models
 import os
 
 def createModel():
+    #set input shape according to the size
+    inputShape = (1, 73, 398)
+    
     #create model
     model = models.Sequential()
 
@@ -31,45 +34,47 @@ def createModel():
 
     return model
 
-#read names from file
-names = np.genfromtxt("train/names_labels.txt", dtype=str, delimiter = ',', skip_header = 1, usecols = (0))
-#read labels from file
-labels = np.genfromtxt('train/names_labels.txt', delimiter = ',', skip_header = 1, usecols = (1))
+def run():
+    #read names from file
+    names = np.genfromtxt("train/names_labels.txt", dtype=str, delimiter = ',', skip_header = 1, usecols = (0))
+    #read labels from file
+    labels = np.genfromtxt('train/names_labels.txt', delimiter = ',', skip_header = 1, usecols = (1))
 
-#read onehots from file
-data = np.load('train/names_onehots.npy', allow_pickle = True).item()
-onehots = data['onehots']
+    #read onehots from file
+    data = np.load('train/names_onehots.npy', allow_pickle = True).item()
+    onehots = data['onehots']
 
-#read validation labels from file
-validLabels = np.genfromtxt('validation/names_labels.txt', delimiter = ',', skip_header = 1, usecols = (1))
+    #read validation labels from file
+    validLabels = np.genfromtxt('validation/names_labels.txt', delimiter = ',', skip_header = 1, usecols = (1))
 
-#read validation onehots from file
-validData = np.load('validation/names_onehots.npy', allow_pickle = True).item()
-validOnehots = validData['onehots']
+    #read validation onehots from file
+    validData = np.load('validation/names_onehots.npy', allow_pickle = True).item()
+    validOnehots = validData['onehots']
 
-#get size of 2D matrix of onehots
-size = onehots[0].shape
-#set input shape according to the size
-inputShape = (1, 73, 398)
+    #get size of 2D matrix of onehots
+    size = onehots[0].shape
 
-#reshape onehots for input purpose
-onehots = np.reshape(onehots, [len(onehots), 1, 73, 398])
-validOnehots = np.reshape(validOnehots , [len(validOnehots), 1, 73, 398])
+    #reshape onehots for input purpose
+    onehots = np.reshape(onehots, [len(onehots), 1, 73, 398])
+    validOnehots = np.reshape(validOnehots , [len(validOnehots), 1, 73, 398])
 
-model = createModel()
-model.summary()
+    model = createModel()
+    model.summary()
 
-checkpoint_path = "weights/cp.ckpt"
-checkpoint_dir = os.path.dirname(checkpoint_path)
+    checkpoint_path = "weights/cp.ckpt"
+    checkpoint_dir = os.path.dirname(checkpoint_path)
 
-#create a callback that saves the model's weights
-cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath = checkpoint_path,
+    #create a callback that saves the model's weights
+    cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath = checkpoint_path,
                                                  save_weights_only = True,
                                                  verbose = 1)
 
-#train the model with the new callback
-model.fit(onehots, labels, epochs = 10, validation_data=(validOnehots, validLabels),
+    #train the model with the new callback
+    model.fit(onehots, labels, epochs = 10, validation_data=(validOnehots, validLabels),
           callbacks=[cp_callback])  #pass callback to training
 
-#save the weights
-model.save('weights/savedWeights')
+    #save the weights
+    model.save('weights/savedWeights')
+
+if __name__ == "__main__":
+    run()
