@@ -7,7 +7,7 @@ import os
 
 #set a constant seed value to get consistent results
 seed_value = 100
-tf.set_random_seed(seed_value)
+tf.compat.v1.set_random_seed(seed_value)
 
 #function to load datasets
 def load_data(filefolder):
@@ -26,7 +26,7 @@ class MyModel(tf.keras.Model):
         self.pool1_layer = tf.keras.layers.MaxPool2D(2, 2)
         self.conv2_layer = tf.keras.layers.Conv2D(32, 3, (1, 2), 'same', activation=tf.nn.relu)
         self.pool2_layer = tf.keras.layers.MaxPool2D(2, 2)
-        
+        self.flatten_layer = tf.keras.layers.Flatten()
         #flat
         self.FCN = tf.keras.layers.Dense(2)
         #softmax
@@ -36,7 +36,7 @@ class MyModel(tf.keras.Model):
         x = self.pool1_layer(x)
         x = self.conv2_layer(x)
         x = self.pool2_layer(x)
-        flat = tf.reshape(x, [-1, 18*50*32])
+        flat = self.flatten_layer(x)
         output = self.FCN(flat)
         output_with_sm = tf.nn.softmax(output)
         return output, output_with_sm
@@ -59,9 +59,9 @@ def run():
 
     #input and output
     onehots_shape = list(train_x.shape[1:])
-    input_place_holder = tf.placeholder(tf.float32, [None] + onehots_shape, name='input')
+    input_place_holder = tf.compat.v1.placeholder(tf.float32, [None] + onehots_shape, name='input')
     input_place_holder_reshaped = tf.reshape(input_place_holder, [-1] + onehots_shape + [1])
-    label_place_holder = tf.placeholder(tf.int32, [None], name='label')
+    label_place_holder = tf.compat.v1.placeholder(tf.int32, [None], name='label')
     label_place_holder_2d = tf.one_hot(label_place_holder, 2)
     output, output_with_sm = model(input_place_holder_reshaped)
 
@@ -76,15 +76,15 @@ def run():
     train_op = tf.train.AdamOptimizer(LR).minimize(loss)
 
     #auc
-    prediction_place_holder = tf.placeholder(tf.float64, [None], name='pred')
-    auc, update_op = tf.metrics.auc(labels=label_place_holder, predictions=prediction_place_holder)
+    prediction_place_holder = tf.compat.v1.placeholder(tf.float64, [None], name='pred')
+    auc, update_op = tf.compat.v1.metrics.auc(labels=label_place_holder, predictions=prediction_place_holder)
 
     #run
-    init_op = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
-    with tf.Session() as sess:
+    init_op = tf.group(tf.compat.v1.global_variables_initializer(), tf.compat.v1.local_variables_initializer())
+    with tf.compat.v1.Session() as sess:
         sess.run(init_op)
 
-        saver = tf.train.Saver()
+        saver = tf.compat.v1.train.Saver()
 
         train_size = train_x.shape[0]
         best_val_auc = 0

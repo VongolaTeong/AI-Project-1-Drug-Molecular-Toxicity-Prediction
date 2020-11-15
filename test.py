@@ -7,7 +7,7 @@ import statistics
 
 #set a constant seed value to get consistent results
 seed_value = 100
-tf.set_random_seed(seed_value)
+tf.compat.v1.set_random_seed(seed_value)
 
 #function to load datasets
 def load_test_data_name(filefolder):
@@ -46,17 +46,17 @@ test_data, test_name = load_test_data_name(test_path)
 name = test_name
 
 #model
-tf.reset_default_graph() 
+tf.compat.v1.reset_default_graph() 
 model = MyModel()
-input_place_holder = tf.placeholder(tf.float32, [None] + list(test_data.shape[1:]), name='input')
+input_place_holder = tf.compat.v1.placeholder(tf.float32, [None] + list(test_data.shape[1:]), name='input')
 input_place_holder_reshaped = tf.reshape(input_place_holder, [-1] + list(test_data.shape[1:]) + [1])
 output, output_with_sm = model(input_place_holder_reshaped)
 
 #predict on the test set
 data_size = test_data.shape[0]
 BatchSize = 128
-with tf.Session() as sess:
-    saver = tf.train.Saver()
+with tf.compat.v1.Session() as sess:
+    saver = tf.compat.v1.train.Saver()
     saver.restore(sess, 'weights/weights')
     prediction = []
     for i in range(0, data_size, BatchSize):
