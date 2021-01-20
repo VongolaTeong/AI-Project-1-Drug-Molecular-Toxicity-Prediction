@@ -24,12 +24,10 @@ class MyModel(tf.keras.Model):
         #set layers
         self.conv1_layer = tf.keras.layers.Conv2D(32, 5, 1, 'same', activation=tf.nn.relu)
         self.pool1_layer = tf.keras.layers.MaxPool2D(2, 2)
-        self.conv2_layer = tf.keras.layers.Conv2D(32, 3, (1, 2), 'same', activation=tf.nn.relu)
+        self.conv2_layer = tf.keras.layers.Conv2D(64, 3, (1, 2), 'same', activation=tf.nn.relu)
         self.pool2_layer = tf.keras.layers.MaxPool2D(2, 2)
         self.flatten_layer = tf.keras.layers.Flatten()
-        #flat
         self.FCN = tf.keras.layers.Dense(2)
-        #softmax
 
     def call(self, inputs):
         x = self.conv1_layer(inputs)
@@ -45,7 +43,7 @@ def run():
     #parameters
     LR = 0.01
     BatchSize = 128
-    EPOCH = 15
+    EPOCH = 2
 
     train_data_path = os.path.join(os.path.dirname(__file__), "train/")
     validation_data_path = os.path.join(os.path.dirname(__file__), "validation/")
@@ -67,7 +65,7 @@ def run():
 
     #show model's structure
     model.summary() 
-
+    
     #loss
     bce = tf.keras.losses.BinaryCrossentropy()
     loss = bce(label_place_holder_2d, output_with_sm)
@@ -103,6 +101,7 @@ def run():
                 print("auc_value", auc_value)
                 if auc_value > best_val_auc:
                     saver.save(sess, 'weights/weights')
-                    
+
+    #tf.keras.utils.plot_model(model, show_shapes=True, to_file='train.png')
 if __name__ == "__main__":
     run()

@@ -4,6 +4,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers, models
 import os
+from tensorflow.keras.utils import plot_model
 
 #set a constant seed value to get consistent results
 seed_value = 100
@@ -24,17 +25,16 @@ def createModel():
     model.add(layers.MaxPooling2D((2, 2), padding = 'same'))
 
     model.add(layers.Conv2D(64, (3, 3), activation='relu', padding = 'same'))
-
     #flatten 3D output to 1D for dense layers
     model.add(layers.Flatten())
     #add dense layers to perform classification
     model.add(layers.Dense(64, activation='relu'))
-    model.add(layers.Dense(2))
+    model.add(layers.Dense(1, activation='sigmoid'))
 
     #compile the model
     model.compile(optimizer='adam',
-              loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-              metrics=['accuracy'])
+              loss = 'binary_crossentropy',
+              metrics=['AUC'])
     
     return model
 
@@ -64,8 +64,9 @@ def run():
 
     model = createModel()
     model.summary()
+    plot_model(model, show_shapes=True, to_file='CNN_train.png')
 
-    checkpoint_path = "original_weights/cp.ckpt"
+    checkpoint_path = "CNN_weights/cp.ckpt"
     checkpoint_dir = os.path.dirname(checkpoint_path)
 
     #create a callback that saves the model's weights
@@ -74,7 +75,7 @@ def run():
                                                  verbose = 1)
 
     #train the model with the new callback
-    model.fit(onehots, labels, epochs = 10, validation_data=(validOnehots, validLabels),
+    model.fit(onehots, labels, epochs = 2, validation_data=(validOnehots, validLabels),
           callbacks=[cp_callback])  #pass callback to training
 
 if __name__ == "__main__":

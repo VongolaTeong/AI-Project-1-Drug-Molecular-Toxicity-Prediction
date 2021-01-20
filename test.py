@@ -3,7 +3,6 @@
 import numpy as np
 import tensorflow as tf
 import os
-import statistics
 
 #set a constant seed value to get consistent results
 seed_value = 100
@@ -23,19 +22,16 @@ class MyModel(tf.keras.Model):
         #set layers
         self.conv1_layer = tf.keras.layers.Conv2D(32, 5, 1, 'same', activation=tf.nn.relu)
         self.pool1_layer = tf.keras.layers.MaxPool2D(2, 2)
-        self.conv2_layer = tf.keras.layers.Conv2D(32, 3, (1, 2), 'same', activation=tf.nn.relu)
+        self.conv2_layer = tf.keras.layers.Conv2D(64, 3, (1, 2), 'same', activation=tf.nn.relu)
         self.pool2_layer = tf.keras.layers.MaxPool2D(2, 2)
         self.flatten_layer = tf.keras.layers.Flatten()
-        # flat
         self.FCN = tf.keras.layers.Dense(2)
-        # softmax
 
     def call(self, inputs):
         x = self.conv1_layer(inputs)
         x = self.pool1_layer(x)
         x = self.conv2_layer(x)
         x = self.pool2_layer(x)
-        #flat = tf.reshape(x, [-1, 18*50*32])
         flat = self.flatten_layer(x)
         output = self.FCN(flat)
         output_with_sm = tf.nn.softmax(output)
@@ -72,15 +68,7 @@ sess.close()
 f = open('output_518030990014.txt', 'w')
 f.write('Chemical,Label\n')
 
-#get the mean of prediction and use it as binary boundary
-mean = statistics.mean(prediction)
-for i, x in enumerate(prediction):
-    if x > mean:
-        prediction[i] = 1
-    else:
-        prediction[i] = 0
-
-for i, x in enumerate(prediction):
-    f.write(name[i] + ',' + str(x) + '\n')
+for i, v in enumerate(prediction):
+        f.write(name[i] + ',%f\n' % v)
     
 f.close()
